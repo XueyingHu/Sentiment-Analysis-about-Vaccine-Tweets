@@ -17,10 +17,11 @@ In this project, we explored the sentiments of the tweets and the relationships 
   - Multi-Layer Perceptron Regressor
 
 ## Conclusion
-![Machine Learning Model Result](https://github.com/XueyingHu/Sentiment-Analysis-about-Vaccine-Tweets/blob/main/Dataset/Result.png)
-Though from simple sentiment analysis and NRC analysis, we have seen that positive emotions are significant and have positive correlations with vaccination rates, the model that has the lowest root mean squared error (the models constructed with Vader Sentiment scores) doesn’t align with this result. 
+<img width="500" alt="截屏2022-05-15 下午9 54 20" src="https://user-images.githubusercontent.com/84733984/168506959-be0e0717-4d06-4747-ad78-7cb208d367b0.png">
+<img width="500" alt="截屏2022-05-15 下午9 54 41" src="https://user-images.githubusercontent.com/84733984/168506991-258c9af1-5d68-4b7e-ba1f-1b7023a202ce.png">
+<img width="500" alt="截屏2022-05-15 下午9 55 11" src="https://user-images.githubusercontent.com/84733984/168507039-6651cbde-3729-41bd-ade6-abe7bb55625b.png">
+<img width="900" alt="截屏2022-05-15 下午9 55 27" src="https://user-images.githubusercontent.com/84733984/168507070-06f0f5cc-f8cc-45d4-aedd-147716c0b34a.png">
 
-Thus, we can’t conclude that sentiments would impact vaccination rates, we believe that further text data on policies within a certain period/country is needed to prove the relationship. Furthermore, we could also include topic analyses (LDA) to perhaps further identify certain topics that may have appeared at different time points in different countries to identify how different topics related to vaccination rates.
 
 Details can be found in the report and the presentation slide.
 

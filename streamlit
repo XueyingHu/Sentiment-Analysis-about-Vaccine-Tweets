@@ -1,0 +1,82 @@
+import streamlit as st
+import boto3
+import time
+
+# AWS 客户端配置
+client = boto3.client('bedrock', region_name='us-east-1')  # 根据需要更改区域
+
+# 初始化对话历史和成本计算
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []  # 聊天历史记录
+if "total_cost" not in st.session_state:
+    st.session_state["total_cost"] = 0.0  # 累计成本
+if "show_suggested" not in st.session_state:
+    st.session_state["show_suggested"] = True  # 控制预设提示的显示
+
+# 预设的 suggested prompt 按钮在输入框上方
+suggested_prompts = ["Hello, how can I help you?", "Tell me a joke!", "What's the weather today?"]
+
+def display_suggested_prompts():
+    if st.session_state.show_suggested:
+        st.write("### Suggested Prompts")
+        cols = st.columns(len(suggested_prompts))
+        for i, prompt in enumerate(suggested_prompts):
+            if cols[i].button(prompt):
+                st.session_state.input_text = prompt  # 点击时将提示加载到输入框
+
+# 发送消息至AWS Bedrock
+def send_message_to_bedrock(message):
+    response = client.generate_text(
+        prompt=message,
+        max_tokens=100  # 设置返回的token数量，根据需要调整
+    )
+    # 处理返回结果和成本计算（假设每 1k tokens 计为 0.002 USD）
+    response_text = response["generated_text"]
+    tokens_used = response["usage"]["total_tokens"]
+    cost = tokens_used * 0.002 / 1000
+    return response_text, cost
+
+# 处理聊天逻辑
+def chat():
+    display_suggested_prompts()  # 显示预设提示
+    user_input = st.text_input("You:", key="input_text", on_change=send_user_message)
+    if user_input:
+        send_user_message()
+
+# 发送用户消息并更新历史记录
+def send_user_message():
+    user_message = st.session_state.input_text
+    if user_message:
+        # 隐藏预设提示
+        st.session_state.show_suggested = False
+
+        # 显示用户输入并保存至历史
+        st.session_state.chat_history.append({"role": "user", "content": user_message})
+        
+        # 调用 Bedrock API 并获取回复及成本
+        response_text, cost = send_message_to_bedrock(user_message)
+        
+        # 显示模型回复并保存至历史
+        st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+        
+        # 更新总成本
+        st.session_state.total_cost += cost
+
+        # 清空输入框
+        st.session_state.input_text = ""
+
+# 显示聊天历史
+def display_chat_history():
+    for message in st.session_state.chat_history:
+        role = "🤖 Assistant" if message["role"] == "assistant" else "🧑 User"
+        st.write(f"{role}: {message['content']}")
+
+# 显示当前对话总成本
+def display_cost():
+    st.sidebar.write(f"Total Cost: ${st.session_state.total_cost:.4f}")
+
+# 主界面
+st.title("Streamlit-based Chatbot with AWS Bedrock")
+display_chat_history()  # 显示聊天历史
+chat()  # 处理聊天逻辑
+display_cost()  # 显示成本
